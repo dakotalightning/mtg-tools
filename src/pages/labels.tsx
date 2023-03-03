@@ -88,7 +88,7 @@ const Labels = () => {
   // const { execute, status, value, error } = useAsync(() => fetch('https://api.scryfall.com/sets'), false);
 
   let setsToPrint = mtgSets.data.filter((i) => toPrint.includes(i.code))
-      .sort((a, b) => a.released_at - b.released_at)
+      .sort((a, b) => a.released_at.localeCompare(b.released_at))
   let grouped = byBlock(setsToPrint)
 
   const onRemove = useCallback((code: string) => {

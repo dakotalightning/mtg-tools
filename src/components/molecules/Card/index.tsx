@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { useCallback, useMemo, useState, Fragment, FC, useEffect } from 'react'
 
 import Head from 'next/head'
@@ -10,10 +11,25 @@ interface Card {
   id?: string
   name: string
   count?: string
+  set: string
+  collector_number: string
+  set_name: string
   image_uris?: {
     small: string
     art_crop: string
+    normal: string
   }
+  data: {
+    [k: string]: any
+  }
+  legalities: {
+    [k: string]: string
+  }
+  rarity: string
+  prices: {
+    usd: string
+  }
+  digital: boolean
 }
 
 const legals = [
@@ -21,7 +37,7 @@ const legals = [
   'alchemy', 'explorer', 'brawl', 'historic', 'pauper', 'penny'
 ]
 
-const Card: FC<{ card: Card }> = ({ card }) => {
+const Card: FC<{ card: { data: Card[] } }> = ({ card }) => {
   const [active, setActive] = useState(0)
   const [activeSet, setActiveSet] = useState(null)
 
@@ -36,7 +52,7 @@ const Card: FC<{ card: Card }> = ({ card }) => {
         <div className="lg:grid-cols-4 grid">
           <div className="lg:col-span-2">
             <div className="aspect-w-10 aspect-h-7 block w-full overflow-hidden rounded-2xl shadow-lg">
-              <img className="max-w-full max-h-full" src={activeCard.image_uris?.normal} />
+              <img alt={activeCard.name} className="max-w-full max-h-full" src={activeCard.image_uris?.normal} />
             </div>
             <div className="text-sm text-slate-500 mt-1 hidden md:block">Select a set on the right to see the card.</div>
           </div>
@@ -66,7 +82,10 @@ const Card: FC<{ card: Card }> = ({ card }) => {
         {card.data.filter((d) => !d.digital).map((d, i) => (
           <div key={d.id} onClick={() => setActive(i)} className="flex items-center border p-2 mb-1 bg-slate-700 hover:bg-slate-500 hover:cursor-pointer text-slate-100 rounded-md shadow-lg">
             <div className="h-[20px] w-[30px] lg:h-[30px] lg:w-[40px] flex justify-center items-center flex-col shrink-0 mr-2">
-              <img className="max-w-full max-h-full invert" src={mtgSetInfo[d.set].svg} />
+              <img
+                alt={d.set_name}
+                className="max-w-full max-h-full invert"
+                src={mtgSetInfo[d.set as keyof typeof mtgSetInfo].svg} />
             </div>
             <div className="">
               <div className="flex items-center text-sm">

@@ -4,14 +4,15 @@ import Link from 'next/link'
 import { BaseLayout, Card } from '@components'
 import { Combobox, Transition } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/solid'
+import { CardsData } from './bulk'
 
 const Page = () => {
   const [loading, setLoading] = useState(false)
   const [cardResults, setCardResults] = useState([])
   const [cards, setCards] = useState<string[]>([])
-  const [foundCards, setFoundCards] = useState<Card[]>([])
+  const [foundCards, setFoundCards] = useState<CardsData[]>([])
 
-  const getCards = useCallback((e) => {
+  const getCards = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const q = e.target.value
     if (q.length > 2) {
       const params = new URLSearchParams({
@@ -72,7 +73,7 @@ const Page = () => {
           </button>
         </div>
         <div className="flex flex-col gap-4 pb-8">
-          {foundCards.map((c) => (<Card key={c.id} card={c} />))}
+          {foundCards.map((c) => (<Card key={c.data[0].name} card={c} />))}
         </div>
       </BaseLayout>
     )

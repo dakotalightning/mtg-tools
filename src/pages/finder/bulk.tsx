@@ -9,8 +9,12 @@ interface Values {
   import: string
 }
 
+export interface CardsData {
+  data: Card[]
+}
+
 const Page = () => {
-  const [cards, setCards] = useState<Card[] | null>(null)
+  const [cards, setCards] = useState<CardsData[] | null>(null)
   const [loading, setLoading] = useState(false)
 
   if (cards !== null && !loading) {
@@ -26,7 +30,7 @@ const Page = () => {
           </button>
         </div>
         <div className="flex flex-col gap-4 pb-8">
-          {cards.map((c) => (<Card key={c.id} card={c} />))}
+          {cards.map((c) => (<Card key={c.data[0].name} card={c} />))}
         </div>
       </BaseLayout>
     )
