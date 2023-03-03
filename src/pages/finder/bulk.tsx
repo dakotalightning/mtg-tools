@@ -3,19 +3,10 @@ import { useCallback, useMemo, useState, Fragment, FC, useEffect } from 'react'
 import Head from 'next/head'
 import { BaseLayout, Card } from '@components'
 import { Formik, Field, Form, FormikHelpers } from 'formik';
+import { ExclamationTriangleIcon } from '@heroicons/react/24/solid'
 
 interface Values {
   import: string
-}
-
-interface Card {
-  id?: string
-  name: string
-  count?: string
-  image_uris?: {
-    small: string
-    art_crop: string
-  }
 }
 
 const Page = () => {
@@ -44,28 +35,35 @@ const Page = () => {
   return (
     <BaseLayout>
 
+    <div className="rounded-md bg-yellow-50 p-4 mt-4">
+      <div className="flex">
+        <div className="flex-shrink-0">
+          <ExclamationTriangleIcon className="h-5 w-5 text-yellow-400" aria-hidden="true" />
+        </div>
+        <div className="ml-3">
+          <h3 className="text-sm font-medium text-yellow-800">Attention needed</h3>
+          <div className="mt-2 text-sm text-yellow-700">
+            <p>
+              Only use if you know what you are doing. Add card names per line. Use the exact card name.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
       <Formik
         initialValues={{
-          import: `2 Touch the Spirit Realm\n8 Valorous Stance\n1 Yotian Frontliner`,
+          import: `Touch the Spirit Realm\nValorous Stance\nYotian Frontliner`,
         }}
         onSubmit={async (
           values: Values,
           { setSubmitting }: FormikHelpers<Values>
         ) => {
           setLoading(true)
-          const regex = /(?<count>\d)\s(?<name>[\w].+)/g
-          const matches = values.import.trimEnd().matchAll(regex)
-          const items: Card[] = []
-          for (const match of matches) {
-            items.push({
-              name: match?.groups?.name!,
-              count: match?.groups?.count!
-            })
-          }
 
-          const cardPromises = items.map((i) => {
+          const cardPromises = values.import.split('\n').map((i) => {
             const params = new URLSearchParams({
-              q: i.name,
+              q: i,
               unique: 'prints',
               include_extras: 'true'
             })
@@ -90,18 +88,6 @@ const Page = () => {
       >
         <Form className="space-y-8 divide-y divide-slate-300">
           <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:pt-5">
-            <label htmlFor="search" className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5">
-              Add Card
-            </label>
-            <div className="mt-2 sm:col-span-2 sm:mt-0">
-              <Field
-                id="search"
-                name="search"
-                className="block w-full max-w-lg rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:px-3 sm:leading-6"
-              />
-            </div>
-          </div>
-          <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:pt-5">
             <label htmlFor="import" className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5">
               Enter Cards
             </label>
@@ -118,12 +104,6 @@ const Page = () => {
 
           <div className="pt-5">
             <div className="flex justify-end gap-x-3">
-              <button
-                type="button"
-                className="rounded-md bg-white py-2 px-3 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-              >
-                Cancel
-              </button>
               <button
                 type="submit"
                 className="inline-flex justify-center rounded-md bg-indigo-600 py-2 px-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"

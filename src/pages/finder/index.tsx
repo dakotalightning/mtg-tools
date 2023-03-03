@@ -83,9 +83,12 @@ const Page = () => {
 
       <div className="space-y-8 divide-y divide-slate-300 p-4">
         <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:pt-5">
-          <label htmlFor="search" className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5">
-            Add Card
-          </label>
+          <div>
+            <label htmlFor="search" className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5">
+              Add Card
+            </label>
+            <p className="mt-2 text-sm text-gray-500">Click <a className="underline" href="/finder/bulk">Here to add bulk.</a></p>
+          </div>
           <div className="mt-2 sm:col-span-2 sm:mt-0">
             <Combobox value={null} onChange={onSelectCard}>
               <div className="relative mt-1">
