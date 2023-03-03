@@ -9,14 +9,28 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@types/node": "18.14.5",
-    "@types/react": "18.0.28",
-    "@types/react-dom": "18.0.11",
+    "@headlessui/react": "^1.7.12",
+    "@heroicons/react": "^2.0.16",
+    "formik": "^2.2.9",
+    "lodash": "^4.17.21",
+    "luxon": "^3.2.1",
+    "ramda": "^0.28.0",
     "eslint": "8.35.0",
     "eslint-config-next": "13.2.3",
     "next": "13.2.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "typescript": "4.9.5"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.191",
+    "@types/luxon": "^3.2.0",
+    "@types/node": "18.14.5",
+    "@types/react": "18.0.28",
+    "@types/ramda": "^0.28.23",
+    "@types/react-dom": "18.0.11",
+    "autoprefixer": "^10.4.13",
+    "postcss": "^8.4.21",
+    "tailwindcss": "^3.2.7"
   }
 }
