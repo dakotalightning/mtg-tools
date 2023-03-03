@@ -1,6 +1,7 @@
 import { FC, PropsWithChildren } from "react"
 import Image from 'next/image'
 import Head from 'next/head'
+import Link from "next/link"
 
 type TLayout = {
   name?: string
@@ -16,7 +17,7 @@ const Layout: FC<PropsWithChildren<TLayout>> = ({ children, name }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="min-h-full">
-        <nav className="bg-indigo-600">
+        <nav className="bg-indigo-600 print:hidden">
 
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="flex h-16 items-center justify-between">
@@ -29,8 +30,8 @@ const Layout: FC<PropsWithChildren<TLayout>> = ({ children, name }) => {
                 </div>
                 <div className="md:block">
                   <div className="ml-10 flex items-baseline space-x-4">
-                    <a href="/finder" className="bg-indigo-700 text-white rounded-md px-3 py-2 text-sm font-medium">Card Finder</a>
-                    <a href="/labels" className="bg-indigo-700 text-white rounded-md px-3 py-2 text-sm font-medium">Label Maker</a>
+                    <Link href="/finder" className="bg-indigo-700 text-white rounded-md px-3 py-2 text-sm font-medium">Card Finder</Link>
+                    <Link href="/labels" className="bg-indigo-700 text-white rounded-md px-3 py-2 text-sm font-medium">Label Maker</Link>
                   </div>
                 </div>
 
@@ -41,7 +42,7 @@ const Layout: FC<PropsWithChildren<TLayout>> = ({ children, name }) => {
         </nav>
 
         {name && (
-          <header className="bg-white shadow">
+          <header className="bg-white shadow print:hidden">
             <div className="mx-auto max-w-7xl py-6 px-4 sm:px-6 lg:px-8">
               <h1 className="text-3xl font-bold leading-tight tracking-tight text-gray-900">{name}</h1>
             </div>

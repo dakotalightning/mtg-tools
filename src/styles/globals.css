@@ -14,4 +14,7 @@
   .print-it .item:nth-of-type(115n) {
     page-break-after: always;
   }
+  body {
+    background-color: white !important;
+  }
 }

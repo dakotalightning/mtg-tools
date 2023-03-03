@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState, Fragment, FC, useEffect } from 'react'
 
-import Head from 'next/head'
+import Link from 'next/link'
 import { BaseLayout, Card } from '@components'
 import { Combobox, Transition } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/solid'
@@ -87,7 +87,7 @@ const Page = () => {
             <label htmlFor="search" className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5">
               Add Card
             </label>
-            <p className="mt-2 text-sm text-gray-500">Click <a className="underline" href="/finder/bulk">Here to add bulk.</a></p>
+            <p className="mt-2 text-sm text-gray-500">Click <Link className="underline" href="/finder/bulk">Here to add bulk.</Link></p>
           </div>
           <div className="mt-2 sm:col-span-2 sm:mt-0">
             <Combobox value={null} onChange={onSelectCard}>
