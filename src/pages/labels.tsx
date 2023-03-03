@@ -97,7 +97,7 @@ const Labels = () => {
 
   return (
     <BaseLayout>
-      <div className={`flex text-center mx-auto ${toggle ? 'print-small' : 'print-large'}`}>
+      <div className="flex text-center mx-auto">
         {showSettings && (
           <div className="print:hidden p-3">
             {setsToPrint.map((s) => (
@@ -134,7 +134,7 @@ const Labels = () => {
             ))}
           </div>
 
-          <div className={`grid print-it ${toggle ? 'grid-cols-4' : 'grid-cols-5'} divide-x divide-y divide-dashed divide-slate-400 print:grid hidden`}>
+          <div className={`grid print-it ${toggle ? 'print-large grid-cols-4' : 'print-small grid-cols-5'} divide-x divide-y divide-dashed divide-slate-400 print:grid hidden`}>
             {Object.keys(grouped).map((key) => (
               <Fragment key={key}>
                 <Group key={key} items={grouped[key]} toggle={toggle} />

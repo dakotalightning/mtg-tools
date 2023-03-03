@@ -11,7 +11,10 @@
 }
 
 @media print {
-  .print-it .item:nth-of-type(115n) {
+  .print-small .item:nth-of-type(115n) {
+    page-break-after: always;
+  }
+  .print-large .item:nth-of-type(36n) {
     page-break-after: always;
   }
   body {
