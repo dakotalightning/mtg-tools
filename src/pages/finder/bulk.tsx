@@ -20,7 +20,23 @@ const Page = () => {
   if (cards !== null && !loading) {
     return (
       <BaseLayout>
-        <div className="my-4 text-right">
+        <div className="my-4 flex justify-between">
+          <div className="flex gap-4">
+            <button
+              onClick={() => setCards(null)}
+              type="button"
+              className="rounded-md bg-white py-2 px-3 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+            >
+              Simple View
+            </button>
+            <button
+              onClick={() => setCards(null)}
+              type="button"
+              className="rounded-md bg-white py-2 px-3 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+            >
+              Detail View
+            </button>
+          </div>
           <button
             onClick={() => setCards(null)}
             type="button"
@@ -29,7 +45,7 @@ const Page = () => {
             Clear
           </button>
         </div>
-        <div className="flex flex-col gap-4 pb-8">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
           {cards.map((c) => (<Card key={c.data[0].name} card={c} />))}
         </div>
       </BaseLayout>
@@ -57,7 +73,7 @@ const Page = () => {
 
       <Formik
         initialValues={{
-          import: `Touch the Spirit Realm\nValorous Stance\nYotian Frontliner`,
+          import: `Touch the Spirit Realm\nValorous Stance\nYotian Frontliner\nKarn's Bastion\nMages' Contest\nMana Geyser `,
         }}
         onSubmit={async (
           values: Values,
@@ -71,7 +87,7 @@ const Page = () => {
               unique: 'prints',
               include_extras: 'true'
             })
-            return fetch(`https://api.scryfall.com/cards/search?${params}`)
+            return fetch(`https://api.scryfall.com/cards/search?${params}`, { cache: 'force-cache' })
               .then((response) => response.json())
               .then((data) => data);
           })
@@ -101,12 +117,12 @@ const Page = () => {
                 id="import"
                 name="import"
                 className="block w-full max-w-lg rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:py-1.5 sm:text-sm sm:px-3 sm:leading-6"
-                rows={30}
+                rows={20}
               />
             </div>
           </div>
 
-          <div className="pt-5">
+          <div className="py-5">
             <div className="flex justify-end gap-x-3">
               <button
                 type="submit"

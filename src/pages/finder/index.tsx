@@ -18,7 +18,7 @@ const Page = () => {
       const params = new URLSearchParams({
         q,
       })
-      return fetch(`https://api.scryfall.com/cards/autocomplete?${params}`)
+      return fetch(`https://api.scryfall.com/cards/autocomplete?${params}`, { cache: 'force-cache' })
         .then((response) => response.json())
         .then((data) => data)
         .then((d) => setCardResults(d.data))
@@ -42,7 +42,7 @@ const Page = () => {
         unique: 'prints',
         include_extras: 'true'
       })
-      return fetch(`https://api.scryfall.com/cards/search?${params}`)
+      return fetch(`https://api.scryfall.com/cards/search?${params}`, { cache: 'force-cache' })
         .then((response) => response.json())
         .then((data) => data);
     })

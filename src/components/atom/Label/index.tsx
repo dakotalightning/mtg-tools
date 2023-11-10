@@ -31,7 +31,7 @@ const Label: FC<TItem> = ({ name, code, date, icon, iconFallback, large = false 
             <>{code} - {date}</>
           </div>
         </div>
-        <div className="h-[50px] w-[60px] flex justify-center items-center flex-col">
+        <div className="h-[50px] w-[60px] flex justify-center items-center flex-col shrink-0">
           <img className="max-w-full max-h-full" src={symbol} onError={onImgError} />
         </div>
       </div>
@@ -48,7 +48,7 @@ const Label: FC<TItem> = ({ name, code, date, icon, iconFallback, large = false 
           <>{code} - {formatedDate}</>
         </div>
       </div>
-      <div className="h-[28px] w-[38px] flex justify-center items-center flex-col shrink-0">
+      <div className="h-[24px] w-[34px] flex justify-center items-center flex-col shrink-0">
         <img className="max-w-full max-h-full" src={symbol} onError={onImgError} />
       </div>
     </div>

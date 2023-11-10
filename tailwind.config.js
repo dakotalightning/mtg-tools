@@ -4,6 +4,11 @@ module.exports = {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
+    extend: {
+      colors: {
+        mtg: '#ea3601'
+      },
+    },
     fontFamily: {
       beleren: 'beleren bold',
     },
