@@ -2,9 +2,10 @@ import { useCallback, useMemo, useState, Fragment } from 'react'
 import reactLogo from './assets/react.svg'
 import useAsync from '../hooks/useAsync';
 import * as R from 'ramda'
-import mtgSets from '../data/sets'
+import mtgSets from '@data/sets.json'
 import { RARITY } from '../config/constants';
 import dynamic from "next/dynamic";
+import { DateTime } from 'luxon';
 
 import Image from 'next/image';
 
@@ -48,11 +49,6 @@ const byBlock = R.groupBy((set: MtgSet) => {
 });
 
 const getImage = (set: TSet, rarity = 'c') => `https://gatherer.wizards.com/Handlers/Image.ashx?type=symbol&set=${set}&size=large&rarity=${rarity}`
-
-// const have2 = ["onc","brc","dmc","ncc","ori","m15","m14","m13","clb","one","bro","dmu","snc","neo","vow","mid","afr","stx","khm","thb","hou","akh","aer","kld","emn","soi","bfz","dtk","frf","ktk","jou","bng","ths","dgm","gtc","rtr","lrw","unf","brr","bot","sta",'dmr', '2x2', '2xm', 'uma', 'a25', 'ima', 'mm3', 'ema', 'mm2']
-// const have = ["one", "bro", 'dmu', 'snc', 'neo', 'afr', 'stx', 'dmr', 'unf', 'bot', 'sta', 'bbr', 'vow', 'mid']
-// const have = ['rtr', 'm14', 'm15', 'm13', 'm19', 'm20', 'm21', 'ths', 'bng', 'jou', 'ktk', 'frf', 'dtk', 'bfz', 'soi', 'emn', 'ori', 'mh2', 'mh1', 'uma', 'a25', 'ima', 'kld', 'dmr', 'plist', 'klm']
-const have = ["khm","znr","thb","eld","m20","war","rna","grn","m19","dom","rix","xln","hou","akh","aer","kld","emn","soi","ogw","bfz","ori","dtk","frf","ktk","m15","jou","bng","ths","m14","dgm","gtc","rtr"]
 
 const labels = [
   { name: 'Instants' },
@@ -142,18 +138,28 @@ const CardLabels = ({ name, type }: { name?: string, type?: EType }) => {
   )
 }
 
+const sortByRelease = (a: MtgSet, b: MtgSet) => {
+  const ad = DateTime.fromFormat(a.released_at, 'y-MM-dd')
+  const bd = DateTime.fromFormat(b.released_at, 'y-MM-dd')
+  return bd.diff(ad).as('days')
+}
+
 const Labels = () => {
   const [toggle, setToggle] = useState(false)
   const [showSettings, onToggleSettings] = useState(false)
-  const [toPrint, setToPrint] = useState(have)
+  const [toPrint, setToPrint] = useState(
+    mtgSets.data.filter((s) => {
+      const d = DateTime.fromFormat(s.released_at, 'y-MM-dd')
+      return !s.digital && s.set_type !== 'token' && d.diffNow('days').days <= 14
+    }).sort(sortByRelease)
+  )
   // const { execute, status, value, error } = useAsync(() => fetch('https://api.scryfall.com/sets'), false);
 
-  let setsToPrint = mtgSets.data.filter((i) => toPrint.includes(i.code))
-      .sort((a, b) => b.released_at.localeCompare(a.released_at))
+  let setsToPrint = [...toPrint].slice(0, 30)
   let grouped = byBlock(setsToPrint)
 
   const onRemove = useCallback((code: string) => {
-    setToPrint((items) => items.filter((i) => i !== code))
+    setToPrint((items) => items.filter((i) => i.code !== code))
   }, [setToPrint])
 
   return (
