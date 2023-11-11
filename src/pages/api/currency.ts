@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
+// @ts-ignore
 import currencyapi from '@everapi/currencyapi-js'
 
 type ResponseData = {
