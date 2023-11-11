@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState, Fragment, FC } from 'react'
 import * as R from 'ramda'
-import mtgSets from '../data/sets'
+import mtgSets from '@/data/sets.json'
 import { RARITY } from '../config/constants';
 import dynamic from "next/dynamic";
 import { DateTime } from 'luxon'
