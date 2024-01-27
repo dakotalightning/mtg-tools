@@ -31,7 +31,7 @@ const Arrow = () => {
   )
 }
 
-const byBlock = R.groupBy((set: MtgSet) => {
+const byBlock = R.groupBy((set: TSet) => {
   return set.block || set.set_type
 });
 
