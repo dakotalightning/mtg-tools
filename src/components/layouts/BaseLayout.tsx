@@ -16,7 +16,7 @@ const Layout: FC<PropsWithChildren<TLayout>> = ({ children, name }) => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <nav className="bg-indigo-600 print:hidden">
+      <nav className="bg-slate-700 print:hidden">
 
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
@@ -29,8 +29,8 @@ const Layout: FC<PropsWithChildren<TLayout>> = ({ children, name }) => {
               </Link>
               <div className="md:block">
                 <div className="ml-10 flex items-baseline space-x-4">
-                  <Link href="/finder" className="bg-indigo-700 text-white rounded-md px-3 py-2 text-sm font-medium">Card Finder</Link>
-                  <Link href="/labels" className="bg-indigo-700 text-white rounded-md px-3 py-2 text-sm font-medium">Label Maker</Link>
+                  <Link href="/finder" className="bg-slate-600 hover:bg-slate-800 text-white rounded-md px-3 py-2 text-sm font-medium">Card Finder</Link>
+                  <Link href="/labels" className="bg-slate-600 hover:bg-slate-800 text-white rounded-md px-3 py-2 text-sm font-medium">Label Maker</Link>
                 </div>
               </div>
 
@@ -47,10 +47,10 @@ const Layout: FC<PropsWithChildren<TLayout>> = ({ children, name }) => {
           </div>
         </header>
       )}
-      <main className="flex flex-1 min-h-full">
-        <div className="mx-auto max-w-xl md:max-w-2xl lg:max-w-7xl sm:px-6 lg:px-8">{children}</div>
+      <main className="flex flex-1 w-full min-h-full">
+        <div className="mx-auto w-full print:!max-w-none max-w-xl md:max-w-2xl lg:max-w-7xl sm:px-6 lg:px-8">{children}</div>
       </main>
-      <footer className="bg-slate-800 text-slate-50 text-xs">
+      <footer className="bg-slate-800 text-slate-50 text-xs print:hidden">
         <div className="mx-auto max-w-xl md:max-w-2xl lg:max-w-7xl sm:px-6 lg:px-8 py-4">Developed by dac0d3z</div>
       </footer>
     </>

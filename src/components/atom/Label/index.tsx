@@ -1,6 +1,5 @@
 import { FC, useCallback, useLayoutEffect, useMemo, useState } from "react"
 import { DateTime } from 'luxon'
-import Image from 'next/image'
 
 type TItem = {
   name: string
@@ -9,16 +8,25 @@ type TItem = {
   icon: string
   iconFallback: string
   large?: boolean
+  rarity: string
 }
 
-const Label: FC<TItem> = ({ name, code, date, icon, iconFallback, large = false }) => {
+const Label: FC<TItem> = ({ name, code, date, icon, iconFallback, large = false, rarity }) => {
   const [symbol, setSymbol] = useState(icon)
+  const [medium, setMedium] = useState(false)
 
   const formatedDate = useMemo(() => DateTime.fromISO(date).toFormat('DD'), [date])
 
-  const onImgError = useCallback(() => {
-    setSymbol(iconFallback)
-  }, [iconFallback])
+  const onImgError = useCallback(async () => {
+    const img = new Image
+    img.onload = () => {
+      setSymbol(`/api/setImage?set=${code}&rarity=${rarity}`)
+    }
+    img.onerror = () => {
+      setSymbol(iconFallback)
+    }
+    img.src = `/api/setImage?set=${code}&rarity=${rarity}`
+  }, [iconFallback, code, rarity])
 
   if (large) {
     return (
@@ -39,8 +47,8 @@ const Label: FC<TItem> = ({ name, code, date, icon, iconFallback, large = false 
   }
 
   return (
-    <div className={`text-slate-800 bg-slate-50 text-left p-[2px] w-[185px] item h-[30px] flex justify-between items-center overflow-hidden`}>
-      <div className="w-[140px] ">
+    <div className={`text-slate-800 bg-slate-50 text-left p-[2px] w-[185px] print:w-[175px] item h-[30px] flex justify-between items-center overflow-hidden`}>
+      <div className="shrink truncate mr-1">
         <div className="text-[13px] leading-[13px] truncate">
           {name}
         </div>

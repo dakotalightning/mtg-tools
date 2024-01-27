@@ -8,10 +8,14 @@ module.exports = {
       colors: {
         mtg: '#ea3601'
       },
-    },
-    fontFamily: {
-      beleren: 'beleren bold',
+      fontFamily: {
+        beleren: 'beleren bold',
+      },
     },
   },
-  plugins: [],
+  plugins: [
+    require("@catppuccin/tailwindcss")({
+      defaultFlavour: "latte",
+    })
+  ],
 }
