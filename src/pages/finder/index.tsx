@@ -82,7 +82,13 @@ const Page = () => {
   return (
     <BaseLayout>
 
-      <div className="space-y-8 divide-y divide-slate-300 p-4">
+      <div className="font-beleren text-3xl mb-3 mx-4 sm:mx-0 mt-6">Card Finder</div>
+
+      <div className="mx-4 mb-4 sm:mx-0">
+        <p>Once you&apos;ve added the card, the app will display all the sets and prints of that card. This means you can easily see how many versions of a card you have, their different artwork, and the sets they belong to. This feature makes managing your collection more organized and finding cards easier.</p>
+      </div>
+
+      <div className="space-y-8 divide-y divide-slate-300">
         <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:pt-5">
           <div>
             <label htmlFor="search" className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5">

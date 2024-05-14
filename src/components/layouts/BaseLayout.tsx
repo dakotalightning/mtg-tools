@@ -51,7 +51,7 @@ const Layout: FC<PropsWithChildren<TLayout>> = ({ children, name }) => {
         <div className="mx-auto w-full print:!max-w-none max-w-xl md:max-w-2xl lg:max-w-7xl sm:px-6 lg:px-8">{children}</div>
       </main>
       <footer className="bg-slate-800 text-slate-50 text-xs print:hidden">
-        <div className="mx-auto max-w-xl md:max-w-2xl lg:max-w-7xl sm:px-6 lg:px-8 py-4">Developed by dac0d3z</div>
+        <div className="mx-auto max-w-xl md:max-w-2xl lg:max-w-7xl sm:px-6 lg:px-8 py-4">Developed by koda</div>
       </footer>
     </>
   )

@@ -55,21 +55,11 @@ const Page = () => {
   return (
     <BaseLayout>
 
-    <div className="rounded-md bg-yellow-50 p-4 mt-4">
-      <div className="flex">
-        <div className="flex-shrink-0">
-          <ExclamationTriangleIcon className="h-5 w-5 text-yellow-400" aria-hidden="true" />
-        </div>
-        <div className="ml-3">
-          <h3 className="text-sm font-medium text-yellow-800">Attention needed</h3>
-          <div className="mt-2 text-sm text-yellow-700">
-            <p>
-              Only use if you know what you are doing. Add card names per line. Use the exact card name.
-            </p>
-          </div>
-        </div>
+      <div className="font-beleren text-3xl mb-3 mx-4 sm:mx-0 mt-6">Card Finder</div>
+
+      <div className="mx-4 mb-4 sm:mx-0">
+        <p>Once you&apos;ve added the card, the app will display all the sets and prints of that card. This means you can easily see how many versions of a card you have, their different artwork, and the sets they belong to. This feature makes managing your collection more organized and finding cards easier.</p>
       </div>
-    </div>
 
       <Formik
         initialValues={{
