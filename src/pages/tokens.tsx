@@ -1,5 +1,12 @@
 import Icon, { IconName } from '@/components/Icon'
 import { useWorkshop } from '@/lib/workshop'
+import { BTN, BTN_PRIMARY, CODE, cx, EYEBROW, H1, H3, NOTE_BOX, PAGE_HEAD, PANEL, SUB } from '@/lib/ui'
+
+const FACE: Record<string, string> = {
+  '': 'bg-[#e8eadf] text-[#527157]',
+  amber: 'bg-[#eee5ce] text-[#947440]',
+  blue: 'bg-[#dce8eb] text-[#366883]',
+}
 
 type Token = {
   name: string
@@ -34,54 +41,54 @@ const TokenLibrary = () => {
 
   return (
     <section>
-      <div className="page-head">
+      <div className={PAGE_HEAD}>
         <div>
-          <div className="eyebrow">BUILD YOUR TABLE KIT</div>
-          <h1>Bring the right tokens.</h1>
-          <p className="sub">A clean, ink-friendly companion for every creature and artifact you create.</p>
+          <div className={EYEBROW}>BUILD YOUR TABLE KIT</div>
+          <h1 className={H1}>Bring the right tokens.</h1>
+          <p className={SUB}>A clean, ink-friendly companion for every creature and artifact you create.</p>
         </div>
       </div>
 
-      <div className="panel" style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+      <div className={cx(PANEL, '!px-5 !py-4 flex items-center justify-between gap-4 flex-wrap')}>
         <div>
-          <h3>Starter token kit</h3>
-          <p className="sub" style={{ fontSize: 13, marginTop: 3 }}>Three example templates · customizable in the full product</p>
+          <h3 className={H3}>Starter token kit</h3>
+          <p className="text-[13px] text-muted mt-[3px]">Three example templates · customizable in the full product</p>
         </div>
-        <button className="primary" onClick={() => TOKENS.forEach((t) => addToQueue(`Token: ${t.name}`))}>
+        <button className={BTN_PRIMARY} onClick={() => TOKENS.forEach((t) => addToQueue(`Token: ${t.name}`))}>
           Queue all three
         </button>
       </div>
 
-      <div className="token-grid">
+      <div className="grid grid-cols-3 gap-5 mt-6 max-[1100px]:gap-3 max-[760px]:grid-cols-1">
         {TOKENS.map((t) => (
-          <article className="token" key={t.name}>
-            <div className="token-top">
-              <h3>{t.name}</h3>
-              <span className="pt">{t.pt}</span>
+          <article className="border border-[#cdc9be] rounded-lg bg-paper overflow-hidden" key={t.name}>
+            <div className="px-[18px] py-4 flex justify-between items-center border-b border-line">
+              <h3 className={H3}>{t.name}</h3>
+              <span className="font-serif text-xl">{t.pt}</span>
             </div>
-            <div className={`token-face${t.face ? ' ' + t.face : ''}`}>
-              <Icon name={t.icon} />
+            <div className={cx('h-[180px] flex items-center justify-center max-[760px]:h-[140px]', FACE[t.face])}>
+              <Icon name={t.icon} className="w-20 h-20 [stroke-width:1]" />
             </div>
-            <div className="token-body">
-              <div className="eyebrow">{t.eyebrow}</div>
-              <h3>{t.heading}</h3>
-              <p>
+            <div className="p-[18px]">
+              <div className={EYEBROW}>{t.eyebrow}</div>
+              <h3 className={H3}>{t.heading}</h3>
+              <p className="text-muted text-[13px] mt-1.5 mb-5">
                 {t.body.split('\n').map((line, i) => (
                   <span key={i}>{line}{i === 0 && <br />}</span>
                 ))}
               </p>
-              <button onClick={() => addToQueue(`Token: ${t.name}`)}>Add to print queue +</button>
+              <button className={cx(BTN, 'w-full text-sm')} onClick={() => addToQueue(`Token: ${t.name}`)}>Add to print queue +</button>
             </div>
           </article>
         ))}
       </div>
 
-      <div className="note-box">
+      <div className={NOTE_BOX}>
         <div>
-          <h3>Designed for your printer, not just your screen.</h3>
-          <p>Minimal line icons, spacious rules areas, and readable power / toughness.</p>
+          <h3 className={H3}>Designed for your printer, not just your screen.</h3>
+          <p className="text-[13px] text-[#64695f] mt-[3px]">Minimal line icons, spacious rules areas, and readable power / toughness.</p>
         </div>
-        <span className="code">LOW-INK EDITION</span>
+        <span className={CODE}>LOW-INK EDITION</span>
       </div>
     </section>
   )

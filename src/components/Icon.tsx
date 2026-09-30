@@ -55,8 +55,13 @@ export const IconSprite: FC = () => (
   </svg>
 )
 
-const Icon: FC<{ name: IconName }> = ({ name }) => (
-  <svg>
+const Icon: FC<{ name: IconName; className?: string }> = ({ name, className }) => (
+  <svg
+    className={
+      'w-5 h-5 shrink-0 fill-none stroke-current [stroke-width:1.6] [stroke-linecap:round] [stroke-linejoin:round]' +
+      (className ? ' ' + className : '')
+    }
+  >
     <use href={`#${name}`} />
   </svg>
 )

@@ -33,8 +33,10 @@ Client-side only. On submit (and preloaded with "Sol Ring" on mount) it calls `c
 
 ### Icons and visual direction
 
-- All icons are original line marks defined once in `components/Icon.tsx` (`IconSprite` is rendered by the layout; `<Icon name>` uses `<use href="#name">`). **No official MTG set symbols** — set symbols are intentionally rendered as a generic diamond (◇). Keep it that way.
-- The entire look lives in `src/styles/globals.css`: a `:root` palette (parchment canvas, midnight sidebar, brass accent, per-color families), Georgia serif headings, system-sans UI text, monospace identifiers, fine borders, paper surfaces. **Tailwind's `@tailwind` directives were intentionally removed** — the design is hand-written CSS classes (`.card-preview`, `.divider`, `.token`, `.player`, `.swatch`, etc.) and Tailwind's preflight reset conflicted with them. Prefer these existing classes (or inline styles referencing the CSS vars) over reintroducing Tailwind utilities.
+- All icons are original line marks defined once in `components/Icon.tsx` (`IconSprite` is rendered by the layout; `<Icon name>` uses `<use href="#name">`, and takes an optional `className` to resize/restyle). **No official MTG set symbols** — set symbols are intentionally rendered as a generic diamond (◇). Keep it that way.
+- **Styling is Tailwind utilities written inline in the JSX**, not a component stylesheet. The workshop palette (`ink`, `muted`, `canvas`, `paper`, `line`, `night`, `brass`, `gold`, `azure`, `forest`, `rust`) and a Georgia-first `font-serif` are defined in `tailwind.config.js`; one-off colors use arbitrary values (`bg-[#1b2427]`). Responsive parity with the original mockup uses `max-[1100px]:` / `max-[760px]:` / `min-[1600px]:` variants (Tailwind 3.2 `max-*`/arbitrary variants).
+- `src/lib/ui.ts` holds shared Tailwind class strings for the repeated primitives — `BTN`, `BTN_PRIMARY`, `EYEBROW`, `SUB`, `CODE`, `H1`/`H2`/`H3`, `PANEL`, `PAGE_HEAD`, `NOTE_BOX` — plus a `cx()` joiner. Reuse these (compose with `cx(..., 'extra classes')`, and `!`-prefix to override a shared value) rather than re-typing long utility runs.
+- `src/styles/globals.css` is deliberately tiny: `@tailwind` directives, a small `@layer base` (html/body sizing + body font/bg), the native `dialog::backdrop` (no inline-utility equivalent), reduced-motion, and print `body` background. Use the Tailwind `print:hidden` variant for hiding chrome when printing.
 
 ## Conventions
 
