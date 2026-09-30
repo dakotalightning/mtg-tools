@@ -1,14 +1,14 @@
-import CurrencyProvider from '@/lib/currency'
-import SetProvider from '@/lib/sets'
 import '@/styles/globals.css'
 import type { AppProps } from 'next/app'
+import WorkshopProvider from '@/lib/workshop'
+import { WorkshopLayout } from '@components'
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <SetProvider>
-      <CurrencyProvider>
+    <WorkshopProvider>
+      <WorkshopLayout>
         <Component {...pageProps} />
-      </CurrencyProvider>
-    </SetProvider>
+      </WorkshopLayout>
+    </WorkshopProvider>
   )
 }

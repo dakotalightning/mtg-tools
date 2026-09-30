@@ -1,270 +1,171 @@
-import { useCallback, useMemo, useState, Fragment, useEffect } from 'react'
-import reactLogo from './assets/react.svg'
-import useAsync from '../hooks/useAsync';
-import * as R from 'ramda'
-import mtgSets from '@data/sets.json'
-import { RARITY } from '../config/constants';
-import dynamic from "next/dynamic";
-import { DateTime } from 'luxon';
-import { Combobox } from '@headlessui/react'
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
+import { useWorkshop } from '@/lib/workshop'
 
-import Image from 'next/image';
-import { TSet } from '@/types/set'
-
-import black from '../imgs/black.gif'
-import blue from '../imgs/blue.gif'
-import red from '../imgs/red.gif'
-import green from '../imgs/green.gif'
-import white from '../imgs/white.gif'
-
-// import Label from '../components/atom/Label';
-const Label = dynamic(() => import('../components/atom/Label'), { ssr: false });
-
-import { BaseLayout, Card } from '@components'
-
-type TSetGroup = {
-  block: string
-  type: string
-}
-
-const byBlock = R.groupBy((set: TSet) => {
-  return set.block || set.set_type
-});
-
-const getImage = (set: TSetGroup, rarity = 'c') => `https://gatherer.wizards.com/Handlers/Image.ashx?type=symbol&set=${set}&size=large&rarity=${rarity}`
-
-const getFallbackImage = (set: TSet, rarity = 'c') => {
-  if (set.icon_svg_uri.includes('star')) {
-    return `https://gatherer.wizards.com/Handlers/Image.ashx?type=symbol&set=sld&size=large&rarity=${rarity}`
-  }
-  return set.icon_svg_uri
-}
-
-const labels = [
-  { name: 'Instants' },
-  { name: 'Enchanments' },
-  { name: 'Sorcery' },
-  { name: 'Lands' },
-  { name: 'Standard' },
-  { name: 'Legacy' },
-  { name: 'Tokens' },
-  { name: 'Modern' },
-  { name: 'Vintage' },
-  { name: 'Pioner' },
-  { name: 'Common' },
-  { name: 'Uncommon' },
-  { name: 'Rare' },
-  { name: 'Mythic Rare' },
+const COLORS = [
+  { value: '#316a8c', label: 'Blue / deep azure' },
+  { value: '#3e6f57', label: 'Green / forest' },
+  { value: '#994d41', label: 'Red / terracotta' },
+  { value: '#3b4147', label: 'Black / charcoal' },
+  { value: '#856632', label: 'White / warm ivory' },
+  { value: '#886326', label: 'Multicolor / brass' },
 ]
 
-// wizards proper code
-const override = {
-  UNF: 'UNFS'
-}
+const TEMPLATES = ['Set divider', 'Color divider', 'Type divider']
+const POSITIONS = ['Center', 'Left', 'Right']
 
-const Group = ({ items, toggle }: { items: TSet[], toggle: boolean }) => {
-  return (
-    <>
-      {items.map((item, index) => {
-        return RARITY.map((r: string, rIndex) => {
-          const finalCode = item.code.toUpperCase()
-          // @ts-ignore
-          const code = override[finalCode] || finalCode
+const esc = (t: string) =>
+  t.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' }[c] as string))
 
-          return <Label
-            large={toggle}
-            key={`${code}-${r}`}
-            code={code}
-            date={item.released_at}
-            icon={getImage(code, r)}
-            rarity={r}
-            iconFallback={getFallbackImage(item, r)}
-            name={item.name}
-          />
-        })
-      })}
-    </>
-  )
-}
+const LabelStudio = () => {
+  const router = useRouter()
+  const { addToQueue, toast } = useWorkshop()
 
-enum EType {
-  white = 'White',
-  blue = 'Blue',
-  black = 'Black',
-  red = 'Red',
-  green = 'Green',
-}
+  const [template, setTemplate] = useState(TEMPLATES[0])
+  const [text, setText] = useState('Commander 2021')
+  const [code, setCode] = useState('C21')
+  const [position, setPosition] = useState(POSITIONS[0])
+  const [color, setColor] = useState(COLORS[0].value)
+  const [cutLines, setCutLines] = useState(true)
 
-const CardLabelType = ({ type }: { type?: EType }) => {
-  switch (type) {
-    case EType.black:
-      return <Image className="max-w-full max-h-full" alt={type} src={black} />
-    case EType.blue:
-      return <Image className="max-w-full max-h-full" alt={type} src={blue} />
-    case EType.white:
-      return <Image className="max-w-full max-h-full" alt={type} src={white} />
-    case EType.red:
-      return <Image className="max-w-full max-h-full" alt={type} src={red} />
-    case EType.green:
-      return <Image className="max-w-full max-h-full" alt={type} src={green} />
-    default:
-      return null
-  }
-}
-
-const CardLabels = ({ name, type }: { name?: string, type?: EType }) => {
-  return (
-    <div className={`text-slate-800 bg-slate-50 text-left p-[2px] w-[185px] item h-[30px] flex justify-between items-center overflow-hidden`}>
-      <div className="w-[140px] ">
-        <div className="text-[13px] leading-[13px] truncate">
-          {type ? type : name}
-        </div>
-      </div>
-      {type && (
-        <div className="h-[24px] w-[24px] flex justify-center items-center flex-col shrink-0">
-          <CardLabelType type={type} />
-        </div>
-      )}
-    </div>
-  )
-}
-
-const sortByRelease = (a: TSet, b: TSet) => {
-  const ad = DateTime.fromFormat(a.released_at, 'y-MM-dd')
-  const bd = DateTime.fromFormat(b.released_at, 'y-MM-dd')
-  return bd.diff(ad).as('days')
-}
-
-const showLatest = (s: TSet) => {
-  const d = DateTime.fromFormat(s.released_at, 'y-MM-dd')
-  return d.diffNow('years').years >= -2
-}
-
-const setTypes = ['expansion', 'commander', 'promo', 'draft_innovation', 'masters', 'masterpiece', 'memorabilia', 'promos', 'funny', 'minigame', 'box', 'arsenal', 'core', 'spellbook', 'planechase', 'duel_deck', 'from_the_vault', 'archenemy', 'starter', 'premium_deck', 'vanguard']
-
-const DEFAULT_HIDDEN_SET_TYPES = [
-  'masterpiece', 'memorabilia', 'promos', 'funny', 'minigame', 'box', 'arsenal', 'spellbook', 'planechase', 'duel_deck', 'from_the_vault', 'archenemy', 'starter', 'premium_deck', 'vanguard', 'promo'
-]
-
-const Labels = () => {
-  const [toggle, setToggle] = useState(false)
-  const [showSettings, onToggleSettings] = useState(false)
-  const [data, setData] = useState<TSet[]>([])
-  const [addedSets, setAddedSets] = useState<TSet[]>([])
-  const [filteredSets, setFilteredSets] = useState<string[]>([])
-  const [hiddenSetTypes, setHiddenSetTypes] = useState(DEFAULT_HIDDEN_SET_TYPES)
-  const [query, setQuery] = useState('')
-
+  // Prefill from "Make label" on the Card Finder.
   useEffect(() => {
-    fetch('/api/sets', { cache: 'force-cache' })
-      .then((response) => response.json())
-      .then(({data} : { data: TSet[]}) => {
-        return setData(data.filter((s: TSet) => !s.digital && s.set_type !== 'token'))
-      })
-  }, [])
+    if (!router.isReady) return
+    const { text: qText, code: qCode } = router.query
+    if (typeof qText === 'string') setText(qText.slice(0, 34))
+    if (typeof qCode === 'string') setCode(qCode.slice(0, 6))
+  }, [router.isReady, router.query])
 
-  const toPrint = useMemo(() => {
-    const filteredBySetType = data
-      .filter((s) => !hiddenSetTypes.includes(s.set_type) && !filteredSets.includes(s.id))
-      .filter(showLatest)
-    return [...filteredBySetType, ...addedSets].sort(sortByRelease)
-  }, [data, addedSets, hiddenSetTypes, filteredSets])
+  const family = (COLORS.find((c) => c.value === color)?.label || '').split(' / ')[0]
+  const hierarchy = `${family.toUpperCase()} / ARTIFACT / SET`
+  const tabStyle =
+    position === 'Left'
+      ? { marginLeft: 0, marginRight: 'auto' }
+      : position === 'Right'
+        ? { marginLeft: 'auto', marginRight: 0 }
+        : { marginLeft: 'auto', marginRight: 'auto' }
 
-  const grouped = useMemo(() => byBlock(toPrint), [toPrint])
-
-  const onRemove = useCallback((set: TSet) => {
-
-    setFilteredSets((s) => [...s, set.id])
-  }, [])
-
-  const onSelectSet = useCallback((set: TSet) => {
-    setAddedSets((s) => [...s, set])
-  }, [])
-
-  const filteredQuerySets =
-    query.length < 3
-      ? []
-      : query.length <= 4
-        ? data.filter((set) => set.code.toLowerCase() === query.toLowerCase()).slice(0, 12)
-        : data.filter((set) => set.name.toLowerCase().includes(query.toLowerCase())).slice(0, 12)
+  const exportSvg = () => {
+    const x = position === 'Left' ? 0 : position === 'Right' ? 55 : 27.5
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="69mm" height="104mm" viewBox="0 0 69 104">
+<path d="M0 8H${x}V2Q${x} 0 ${x + 2} 0H${x + 12}Q${x + 14} 0 ${x + 14} 2V8H69V104H0Z" fill="#fffdf8" stroke="#7d827b" stroke-width=".25" ${cutLines ? 'stroke-dasharray="1 1"' : ''}/>
+<rect x="${x}" y="1" width="14" height="7" fill="${color}"/>
+<text x="${x + 7}" y="5.5" text-anchor="middle" font-family="Arial" font-size="2.6" fill="white">${esc(code)}</text>
+<rect y="8" width="69" height="1.2" fill="${color}"/>
+<text x="7" y="26" font-family="Arial" font-size="3" fill="#626b6e">${esc(template.toUpperCase())}</text>
+<foreignObject x="7" y="33" width="55" height="30">
+<div xmlns="http://www.w3.org/1999/xhtml" style="font:6px Georgia;color:#202a30;overflow-wrap:anywhere">${esc(text)}</div>
+</foreignObject>
+<path d="M7 68H62" stroke="#dedbd2" stroke-width=".3"/>
+<text x="7" y="78" font-family="Arial" font-size="2.8" fill="#626b6e">${esc(hierarchy)}</text>
+<text x="7" y="96" font-family="Arial" font-size="2" fill="#626b6e">CARD CLOUD / WORKSHOP</text>
+</svg>`
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }))
+    a.download = 'card-cloud-divider.svg'
+    a.click()
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000)
+    toast('Divider SVG exported — print at actual size')
+  }
 
   return (
-    <BaseLayout>
-      <div className="flex text-center mx-auto font-beleren">
-        <div className={`mx-auto text-center ${toggle ? 'w-[960px]' : 'w-[925px]'} height-[750px] py-5 print:py-0 print:w-full`}>
-          <div className="flex justify-center gap-4 print:hidden">
+    <section>
+      <div className="page-head">
+        <div>
+          <div className="eyebrow">DESIGN · ARRANGE · PRINT</div>
+          <h1>A little order for your collection.</h1>
+          <p className="sub">Readable labels. Staggered tabs. A system that grows with your cards.</p>
+        </div>
+      </div>
 
-            <Combobox onChange={onSelectSet} as="div" className="relative w-full text-left">
-              <Combobox.Input placeholder="Search here to add a set by name or code" className="block w-full flex-1 border rounded border-slate-300 bg-slate-100 py-1.5 pl-2 text-slate-900 placeholder:text-slate-400 focus:ring-0 outline-slate-800 sm:text-sm sm:leading-6" onChange={(event) => setQuery(event.target.value)} />
-              <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm">
-                {filteredQuerySets.map((set) => (
-                  <Combobox.Option key={set.id} value={set} className="relative cursor-pointer select-none px-4 py-2 text-slate-700 hover:bg-slate-600 hover:text-slate-100">
-                    {set.name} - {set.code}
-                  </Combobox.Option>
-                ))}
-              </Combobox.Options>
-            </Combobox>
+      <div className="editor-layout">
+        <div className="panel">
+          <div className="eyebrow">DIVIDER SETTINGS</div>
 
-            <button onClick={() => setToggle(!toggle)} className="inline-flex items-center justify-center rounded-md bg-slate-600 py-2 px-3 text-sm font-semibold text-slate-100 shadow-sm hover:bg-slate-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600 print:hidden">
-              {toggle ? 'Show Small' : 'Show Large'}
-            </button>
-            <button onClick={() => onToggleSettings(!showSettings)} className="inline-flex items-center justify-center rounded-md bg-slate-600 py-2 px-3 text-sm font-semibold text-slate-100 shadow-sm hover:bg-slate-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600 print:hidden">
-              {toggle ? 'Hide Settings' : 'Show Settings'}
-            </button>
+          <label className="field">Template
+            <select value={template} onChange={(e) => setTemplate(e.target.value)}>
+              {TEMPLATES.map((t) => <option key={t}>{t}</option>)}
+            </select>
+          </label>
+
+          <label className="field">Label text
+            <input value={text} maxLength={34} onChange={(e) => setText(e.target.value)} />
+          </label>
+
+          <div className="field-grid">
+            <label className="field">Set code
+              <input value={code} maxLength={6} onChange={(e) => setCode(e.target.value)} />
+            </label>
+            <label className="field">Tab position
+              <select value={position} onChange={(e) => setPosition(e.target.value)}>
+                {POSITIONS.map((p) => <option key={p}>{p}</option>)}
+              </select>
+            </label>
           </div>
-          {showSettings && (
-            <div className="print:hidden p-3">
-              {toPrint.map((s) => (
-                <div key={s.code}>
-                  <button
-                    onClick={() => onRemove(s)}
-                    className="text-sm py-1 px-2 hover:text-slate-700 hover:bg-slate-300 w-full hover:line-through"
-                  >
-                    <div className="flex text-left">
-                      <div className="h-[20px] w-[30px] flex justify-center items-center flex-col shrink-0 mr-2">
-                        <img className="max-w-full max-h-full" src={s.icon_svg_uri} />
-                      </div>
-                      <div>
-                        {s.name} - {s.code}
-                        <div>{DateTime.fromISO(s.released_at).toFormat('DD')}</div>
-                      </div>
-                    </div>
-                  </button>
-                </div>
-              ))}
+
+          <label className="field">Color family
+            <select value={color} onChange={(e) => setColor(e.target.value)}>
+              {COLORS.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
+            </select>
+          </label>
+
+          <div className="switchline">
+            <label htmlFor="cut-lines">Show cut guides</label>
+            <input type="checkbox" id="cut-lines" checked={cutLines} onChange={(e) => setCutLines(e.target.checked)} />
+          </div>
+
+          <div style={{ borderTop: '1px solid var(--line)', paddingTop: 16, fontSize: 12, color: 'var(--muted)' }}>
+            Sleeved-card body: 69 × 96 mm<br />Set tab: 14 × 8 mm<br />Print at 100% / actual size
+          </div>
+
+          <button
+            className="primary"
+            style={{ width: '100%', marginTop: 20 }}
+            onClick={() => addToQueue(`Divider: ${text || 'Untitled'}`)}
+          >
+            Add divider to print queue
+          </button>
+        </div>
+
+        <div>
+          <div className="stage">
+            <div className="stagebar">
+              <span>LIVE PREVIEW</span>
+              <span>Front face · enlarged view</span>
             </div>
-          )}
-
-          {/* <div className={`grid ${toggle ? 'grid-cols-4' : 'grid-cols-5'} divide-x divide-y divide-dashed divide-slate-400`}>
-            <CardLabels type={EType.black} />
-            <CardLabels type={EType.blue} />
-            <CardLabels type={EType.red} />
-            <CardLabels type={EType.white} />
-            <CardLabels type={EType.green} />
-
-            {labels.map((k) => <CardLabels key={k.name} name={k.name} />)}
-          </div> */}
-
-          <div className={`grid ${toggle ? 'grid-cols-4' : 'grid-cols-3'} divide-x divide-y divide-dashed divide-slate-400 print:hidden`}>
-            {Object.keys(grouped).map((key) => (
-              <Fragment key={key}>
-                <div className={`text-md border-b py-4 my-4 w-full ${toggle ? 'col-span-4' : 'col-span-5'} print:hidden`}>{key.toLocaleUpperCase()}</div>
-                <Group key={key} items={grouped[key]} toggle={toggle} />
-              </Fragment>
-            ))}
+            <div className="stageinner">
+              <div className="divider">
+                <div className="divider-tab" style={{ background: color, ...tabStyle }}>{code || 'SET'}</div>
+                <div className="divider-body" style={{ borderTopColor: color, borderStyle: cutLines ? 'dashed' : 'solid' }}>
+                  <div className="big-symbol" style={{ color }}>◇</div>
+                  <small>{template.toUpperCase()}</small>
+                  <h2 style={{ marginTop: 12 }}>{text || 'Your label'}</h2>
+                  <div className="rule" />
+                  <div className="hierarchy">{hierarchy}</div>
+                  <div style={{ position: 'absolute', bottom: 14, left: 20, font: '9px monospace', color: '#626b6e' }}>
+                    CARD CLOUD · WORKSHOP
+                  </div>
+                </div>
+                <div className="dimension">← 69 mm body →</div>
+              </div>
+              <div>
+                <div className="paper-mini" aria-label="Illustration of a printable divider sheet">
+                  {Array.from({ length: 6 }).map((_, i) => <i key={i} />)}
+                </div>
+                <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--muted)' }}>Build a print sheet</p>
+              </div>
+            </div>
+            <div className="stagenote">Color → Type → Set · Tab position makes the hierarchy visible.</div>
           </div>
 
-          <div className={`grid print-it ${toggle ? 'print-large grid-cols-4' : 'print-small grid-cols-4'} divide-x divide-y divide-dashed divide-slate-400 print:grid hidden`}>
-            {Object.keys(grouped).map((key) => (
-              <Fragment key={key}>
-                <Group key={key} items={grouped[key]} toggle={toggle} />
-              </Fragment>
-            ))}
+          <div className="print-bottom">
+            <span className="muted">Editable vector export · physical dimensions</span>
+            <button onClick={exportSvg}>Download divider SVG ↓</button>
           </div>
         </div>
       </div>
-    </BaseLayout>
+    </section>
   )
 }
 
-export default Labels
+export default LabelStudio
