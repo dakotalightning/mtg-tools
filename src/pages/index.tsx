@@ -1,6 +1,7 @@
 import Icon from '@/components/Icon'
-import { useWorkshop } from '@/lib/workshop'
+import { useSetData } from '@/lib/sets'
 import { BTN, BTN_PRIMARY, CODE, cx, EYEBROW, H1, H3, NOTE_BOX, PAGE_HEAD, SUB } from '@/lib/ui'
+import { useWorkshop } from '@/lib/workshop'
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
@@ -28,6 +29,8 @@ type TPrinting = {
 
 type Filter = 'all' | 'saved' | 'foil'
 type Sort = 'set' | 'year'
+
+const ICON_FALLBACK = 'https://svgs.scryfall.io/sets/planeswalker.svg?1699246800'
 
 const ART_FALLBACK =
   'data:image/svg+xml;utf8,' +
@@ -59,6 +62,8 @@ const CardFinder = () => {
   const [empty, setEmpty] = useState(false)
   const [filter, setFilter] = useState<Filter>('all')
   const [sort, setSort] = useState<Sort>('set')
+
+  const { icons } = useSetData()
 
   const search = useCallback(async (name: string) => {
     const q = name.trim()
@@ -109,7 +114,7 @@ const CardFinder = () => {
       filter === 'all' ? true : filter === 'saved' ? isSaved(p.id) : p.foil
     )
     const sorted = [...filtered]
-    if (sort === 'year') sorted.sort((a, b) => a.released_at.localeCompare(b.released_at))
+    if (sort === 'year') sorted.sort((b, a) => a.released_at.localeCompare(b.released_at))
     else sorted.sort((a, b) => a.set_name.localeCompare(b.set_name))
     return sorted
   }, [printings, filter, sort, isSaved])
@@ -260,15 +265,20 @@ const CardFinder = () => {
                     <th className="text-left text-[11px] tracking-[1.2px] text-muted px-2.5 py-[13px] font-semibold border-b border-line max-[760px]:px-1.5">RARITY</th>
                     <th className="text-left text-[11px] tracking-[1.2px] text-muted px-2.5 py-[13px] font-semibold border-b border-line max-[1100px]:hidden">NUMBER</th>
                     <th className="text-left text-[11px] tracking-[1.2px] text-muted px-2.5 py-[13px] font-semibold border-b border-line max-[760px]:hidden">COLLECTION</th>
-                    <th className="text-left text-[11px] tracking-[1.2px] text-muted px-2.5 py-[13px] font-semibold border-b border-line max-[760px]:px-1.5"><span aria-label="Select printing">↗</span></th>
                   </tr>
                 </thead>
                 <tbody>
                   {visible.map((p) => (
-                    <tr key={p.id} className={selectedId === p.id ? 'bg-[#e9e6dc]' : undefined}>
+                    <tr key={p.id} className={selectedId === p.id ? 'bg-[#e9e6dc]' : undefined} onClick={() => setSelectedId(p.id)}>
                       <td className="px-2.5 py-[15px] border-b border-line max-[760px]:px-1.5">
                         <div className="flex gap-3 items-center max-[760px]:gap-2">
-                          <span className="w-[34px] h-[34px] grid place-items-center bg-[#ece8df] border border-[#d4cec0] rounded-md text-xl text-[#79643f] max-[760px]:w-7 max-[760px]:h-7 max-[760px]:shrink-0" aria-label="Generic set placeholder">◇</span>
+                          <span className="p-1 w-[34px] h-[34px] flex justify-center items-center bg-[#172329] border border-[#d4cec0] rounded-md text-xl text-[#79643f] max-[760px]:w-7 max-[760px]:h-7 max-[760px]:shrink-0" aria-label="Generic set placeholder">
+                            <img
+                              alt={p.set_name}
+                              className="max-w-full max-h-full invert"
+                              src={icons[p.set] as unknown as string || ICON_FALLBACK} />
+
+                          </span>
                           <div>
                             <strong className="max-[760px]:text-xs">{p.set_name}</strong>
                             <small className="block text-xs text-muted mt-0.5 max-[760px]:text-[11px]">{p.set.toUpperCase()} · {year(p.released_at)}</small>

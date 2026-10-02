@@ -8,14 +8,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `yarn build` — production build
 - `yarn start` — serve the production build
 - `yarn lint` — Next.js/ESLint (`next/core-web-vitals`)
+- `yarn test` — Vitest unit tests (`vitest run`); `yarn test:watch` for watch mode. Specs live beside the code as `*.test.ts(x)` (currently under `src/lib/shopping/`). Test files + `vitest.*.ts` are excluded from `tsconfig` so `next build` ignores them.
 
-Package manager is **yarn** (`yarn@1.22.19`). There is no test runner configured.
+Package manager is **yarn** (`yarn@1.22.19`). Tests run on **Vitest + jsdom** (`@testing-library/react`).
 
 ## Architecture
 
-Next.js 13 **Pages Router** app (`src/pages/`), TypeScript. It is a single-purpose "Card Cloud — Workshop" collection tool with a fixed dark sidebar and five routes:
+Next.js 13 **Pages Router** app (`src/pages/`), TypeScript. It is a single-purpose "Card Cloud — Workshop" collection tool with a fixed dark sidebar and these routes:
 
 - `/` — **Card Finder** (`pages/index.tsx`): live card search against Scryfall, card preview + printings comparison table, filters, select-a-printing.
+- `/shopping` — **Shopping lists** (`pages/shopping.tsx`): create lists, add/bulk-import cards, pick printings, check off while shopping. Data is **browser-only** (see below).
 - `/labels` — **Label Studio** (`pages/labels.tsx`): divider editor with live preview and client-side SVG export.
 - `/tokens` — **Token Library** (`pages/tokens.tsx`): three low-ink token templates, add to shared print queue.
 - `/counters` — **Counter Kit** (`pages/counters.tsx`): four-player life counters (local state).
@@ -26,6 +28,16 @@ Next.js 13 **Pages Router** app (`src/pages/`), TypeScript. It is a single-purpo
 - `_app.tsx` wraps every page in `WorkshopProvider` (`lib/workshop.tsx`) then `WorkshopLayout` (`components/layouts/WorkshopLayout.tsx`). Because navigation uses client-side `next/link`, provider state persists across route changes.
 - **`useWorkshop()`** is the single global store: `queue` (print queue, shared across Token Library + Label Studio + the topbar badge/dialog), `saved`/`toggleSaved`/`isSaved` (the session "collection" the Card Finder's "In my collection" filter reads), and `toast()`/`toastMessage` (transient bottom-center notice).
 - `WorkshopLayout` owns the sidebar nav (active state derived from `router.pathname`), the topbar breadcrumb, the print-queue `<dialog>`, the toast, and the `/` keyboard shortcut to focus search. Cross-page actions pass data via the router query — e.g. Card Finder's "Make label" does `router.push('/labels?text=…&code=…')` and Label Studio reads it once `router.isReady`.
+
+### Shopping lists (browser-only persistence)
+
+All code lives in `src/lib/shopping/` (logic) + `src/components/shopping/` (UI). It is deliberately **decoupled from any backend** — no Prisma/GraphQL/endpoints.
+
+- **Persistence is isolated behind one adapter.** `persistence.ts` is the *only* module that touches `localStorage` (SSR-safe, with an in-memory fallback). `store.ts` (`ShoppingStore`, singleton `shoppingStore`) is the single writer: it holds the cache, notifies subscribers synchronously, and persists important changes immediately / rapid ones debounced. Swap the adapter to move to cloud sync later — the UI never calls `localStorage`.
+- **Versioned + validated.** Data is a `{ version: 1, lists, updatedAt }` envelope under key **`card-cloud:shopping-lists`**. `schema.ts` type-guards unknown JSON; `migrations.ts#migrateShoppingListStorage` salvages valid lists/items and throws only on unrecoverable/unknown-version data, at which point the store writes a timestamped `…:recovery:<iso>` backup and reinitializes.
+- **Model stores references, not card data** (`types.ts`): items keep `cardId`/`oracleCardId`/`cardName` + a tiny `snapshot` (image/type), never full card payloads. Live details are re-fetched from Scryfall via `cards.ts` (`resolveCardByName`, batched `enrichCards` through POST `/cards/collection`, memoized `fetchPrintings`) and surfaced through the `useCardEnrichment` hook.
+- **State:** `ShoppingListProvider` (`useShoppingLists`) hydrates after mount (so SSR renders a loading state — no hydration mismatch), tracks the current list + filter/sort/search, and exposes all mutations bound to the store. Pure immutable ops are in `operations.ts`; derived views (`filterItems`/`sortItems`/`groupBySet`/`listProgress`) in `selectors.ts`; deck-list parsing in `parse.ts`.
+- Cross-tab edits are picked up via the `storage` event; `prefs.ts` remembers the last-selected list separately.
 
 ### Card Finder data flow (Scryfall)
 

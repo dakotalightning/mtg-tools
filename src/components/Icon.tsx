@@ -2,7 +2,7 @@ import { FC } from 'react'
 
 export type IconName =
   | 'cloud' | 'search' | 'label' | 'token' | 'counter'
-  | 'palette' | 'print' | 'leaf' | 'gem' | 'gear'
+  | 'palette' | 'print' | 'leaf' | 'gem' | 'gear' | 'list'
 
 /**
  * Hidden SVG sprite. Rendered once near the root so `<use href="#name"/>`
@@ -46,6 +46,10 @@ export const IconSprite: FC = () => (
       </symbol>
       <symbol id="gem" viewBox="0 0 24 24">
         <path d="m3 8 4-5h10l4 5-9 13Zm0 0h18M7 3l5 18 5-18" />
+      </symbol>
+      <symbol id="list" viewBox="0 0 24 24">
+        <path d="M9 6h11M9 12h11M9 18h11" />
+        <path d="M4.5 6h.01M4.5 12h.01M4.5 18h.01" />
       </symbol>
       <symbol id="gear" viewBox="0 0 24 24">
         <circle cx="12" cy="12" r="4" />

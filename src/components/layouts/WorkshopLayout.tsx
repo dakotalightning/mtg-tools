@@ -10,6 +10,7 @@ type NavItem = { href: string; label: string; icon: IconName }
 
 const NAV: NavItem[] = [
   { href: '/', label: 'Card Finder', icon: 'search' },
+  { href: '/shopping', label: 'Shopping lists', icon: 'list' },
   { href: '/labels', label: 'Label Studio', icon: 'label' },
   { href: '/tokens', label: 'Token Library', icon: 'token' },
   { href: '/counters', label: 'Counter Kit', icon: 'counter' },

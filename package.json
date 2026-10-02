@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@everapi/currencyapi-js": "^1.0.6",
@@ -27,15 +29,21 @@
   },
   "devDependencies": {
     "@catppuccin/tailwindcss": "^0.1.6",
+    "@testing-library/dom": "^10",
+    "@testing-library/jest-dom": "^6",
+    "@testing-library/react": "^16",
     "@types/lodash": "^4.14.191",
     "@types/luxon": "^3.2.0",
     "@types/node": "18.14.5",
     "@types/ramda": "^0.28.23",
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
+    "@vitejs/plugin-react": "^4",
     "autoprefixer": "^10.4.13",
+    "jsdom": "^25",
     "postcss": "^8.4.21",
-    "tailwindcss": "^3.2.7"
+    "tailwindcss": "^3.2.7",
+    "vitest": "^2"
   },
   "packageManager": "yarn@1.22.19+sha1.4ba7fc5c6e704fce2066ecbfb0b0d8976fe62447"
 }
